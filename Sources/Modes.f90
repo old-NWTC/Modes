@@ -95,49 +95,49 @@ IF ( ALLOCATED( InpTwist ) )  DEALLOCATE( InpTwist )
 ALLOCATE ( TC(N,N) , STAT=AllocStat )
 
 IF ( AllocStat /= 0 )  THEN
-   CALL Abort ( 'Error allocating memory for the TC array .' )
+   CALL ProgAbort ( 'Error allocating memory for the TC array .' )
 ENDIF
 
 
 ALLOCATE ( TCC(N,N) , STAT=AllocStat )
 
 IF ( AllocStat /= 0 )  THEN
-   CALL Abort ( 'Error allocating memory for the TCC array .' )
+   CALL ProgAbort ( 'Error allocating memory for the TCC array .' )
 ENDIF
 
 
 ALLOCATE ( TM(N,N) , STAT=AllocStat )
 
 IF ( AllocStat /= 0 )  THEN
-   CALL Abort ( 'Error allocating memory for the TM array .' )
+   CALL ProgAbort ( 'Error allocating memory for the TM array .' )
 ENDIF
 
 
 ALLOCATE ( TK(N,N) , STAT=AllocStat )
 
 IF ( AllocStat /= 0 )  THEN
-   CALL Abort ( 'Error allocating memory for the TK array .' )
+   CALL ProgAbort ( 'Error allocating memory for the TK array .' )
 ENDIF
 
 
 ALLOCATE ( TKK(N,N) , STAT=AllocStat )
 
 IF ( AllocStat /= 0 )  THEN
-   CALL Abort ( 'Error allocating memory for the TKK array .' )
+   CALL ProgAbort ( 'Error allocating memory for the TKK array .' )
 ENDIF
 
 
 ALLOCATE ( TENS(0:NIpts) , STAT=AllocStat )
 
 IF ( AllocStat /= 0 )  THEN
-   CALL Abort ( 'Error allocating memory for the TENS array .' )
+   CALL ProgAbort ( 'Error allocating memory for the TENS array .' )
 ENDIF
 
 
 ALLOCATE ( PLOAD(0:NIpts) , STAT=AllocStat )
 
 IF ( AllocStat /= 0 )  THEN
-   CALL Abort ( 'Error allocating memory for the PLOAD array .' )
+   CALL ProgAbort ( 'Error allocating memory for the PLOAD array .' )
 ENDIF
 
 
@@ -173,28 +173,28 @@ ENDIF
 ALLOCATE ( EIG(N) , STAT=AllocStat )
 
 IF ( AllocStat /= 0 )  THEN
-   CALL Abort ( 'Error allocating memory for the EIG array .' )
+   CALL ProgAbort ( 'Error allocating memory for the EIG array .' )
 ENDIF
 
 
 ALLOCATE ( VEC(N,N) , STAT=AllocStat )
 
 IF ( AllocStat /= 0 )  THEN
-   CALL Abort ( 'Error allocating memory for the VEC array .' )
+   CALL ProgAbort ( 'Error allocating memory for the VEC array .' )
 ENDIF
 
 
 ALLOCATE ( REIG(N) , STAT=AllocStat )
 
 IF ( AllocStat /= 0 )  THEN
-   CALL Abort ( 'Error allocating memory for the REIG array .' )
+   CALL ProgAbort ( 'Error allocating memory for the REIG array .' )
 ENDIF
 
 
 ALLOCATE ( CNORM(N) , STAT=AllocStat )
 
 IF ( AllocStat /= 0 )  THEN
-   CALL Abort ( 'Error allocating memory for the CNORM array .' )
+   CALL ProgAbort ( 'Error allocating memory for the CNORM array .' )
 ENDIF
 
 
@@ -298,15 +298,16 @@ DO IS=1,NumStiff
 
    ENDIF
 
-   WRITE (Line,'(10X,9("     Shape",I2,:))')  ( I, I=1,N )
+   WRITE (Line,'(10X,9("         Shape",I2,:))')  ( I, I=1,N )
    WRITE (UO,'(/,A)')  TRIM( Line )
    CALL WrScr1 ( TRIM( Line ) )
 
-   WRITE (Line,'(10X,9(5X,A,:))')  ( '-------', I=1,N )
+   WRITE (Line,'(10X,9(9X,A,:))')  ( '-------', I=1,N )
    WRITE (UO,'(A)')  TRIM( Line )
    CALL WrScr ( TRIM( Line ) )
 
-   WRITE (Line,'(" Freq (hz)",9(F12.4,:))')  ( REIG(J), J=1,N )
+!!!WRITE (Line,'(" Freq (hz)",9(F12.4,:))')  ( REIG(J), J=1,N )
+   WRITE (Line,'("          ",9(e16.8,:))')  ( REIG(J), J=1,N )     
    WRITE (UO,'(A)')  TRIM( Line )
    WRITE (UO,'()')
    CALL WrScr ( TRIM( Line ) )
@@ -315,7 +316,8 @@ DO IS=1,NumStiff
    DO M=NP,N+NP-1
 
       II = M - NP + 1
-      WRITE (Line,'("    x^",I1,3X,9(F12.4,:))')  M, ( VEC(II,J)/CNORM(J), J=1,N )
+!!!   WRITE (Line,'("    x^",I1,3X,9(F12.4,:))')  M, ( VEC(II,J)/CNORM(J), J=1,N ) 
+      WRITE (Line,'("       ",3X,9(e16.8,:))')  ( VEC(II,J)/CNORM(J), J=1,N ) 
       WRITE (UO,'(A)')  TRIM( Line )
       CALL WrScr ( TRIM( Line ) )
 
@@ -338,6 +340,7 @@ SUBROUTINE CheckArgs
 USE                   GenMod
 USE                   SysMod
 USE                   SysSubs
+USE                   GenSubs
 
 IMPLICIT              NONE
 
@@ -364,7 +367,7 @@ IF ( Arg_Num > 0 )  THEN
       CALL Get_Arg ( IArg , Arg , Error )
 
       IF ( Error )  THEN
-         CALL Abort ( 'Error getting command-line argument.' )
+         CALL ProgAbort ( 'Error getting command-line argument.' )
       ENDIF
 
             ! If the argument is a command switch, assume it is "/h", and give help.
@@ -417,7 +420,7 @@ INQUIRE ( FILE=InFile , EXIST=Exists )
 IF ( Exists )  THEN
    OPEN( UI , FILE=InFile , STATUS='OLD' , FORM='FORMATTED' )
 ELSE
-   CALL Abort ( 'Error.  The input file, "'//TRIM( RootName )//'.inp", was not found.' )
+   CALL ProgAbort ( 'Error.  The input file, "'//TRIM( RootName )//'.inp", was not found.' )
 ENDIF
 
 
@@ -428,7 +431,7 @@ OutFile = TRIM( RootName )//'.mod'
 OPEN( UO , FILE=TRIM( OutFile ) , STATUS='UNKNOWN' , FORM='FORMATTED', IOSTAT=IOS )
 
 IF ( IOS /= 0 )  THEN
-   CALL Abort ( 'Error.  The output file, "'//TRIM( OutFile )//'", could not be opened.' )
+   CALL ProgAbort ( 'Error.  The output file, "'//TRIM( OutFile )//'", could not be opened.' )
 ENDIF
 
 
@@ -468,7 +471,7 @@ READ(UI,*,IOSTAT=IOS)  IsBlade
 IF ( IOS < 0 )  THEN
    CALL PremEOF ( TRIM( RootName )//'.inp' , ' The error occurred while trying to read the blade/tower indicator.' )
 ELSEIF ( IOS > 0 )  THEN
-   Call Abort ( ProgName//' could not read the blade/tower indicator from the input file, "'//TRIM( RootName )//'.inp".' )
+   Call ProgAbort ( ProgName//' could not read the blade/tower indicator from the input file, "'//TRIM( RootName )//'.inp".' )
 ENDIF
 
 IF ( IsBlade )  THEN
@@ -489,7 +492,7 @@ READ(UI,*,IOSTAT=IOS)  Omega
 IF ( IOS < 0 )  THEN
    CALL PremEOF ( TRIM( RootName )//'.inp' , ' The error occurred while trying to read the rotor speed.' )
 ELSEIF ( IOS > 0 )  THEN
-   Call Abort ( ProgName//' could not read the rotor speed from the input file, "'//TRIM( RootName )//'.inp".' )
+   Call ProgAbort ( ProgName//' could not read the rotor speed from the input file, "'//TRIM( RootName )//'.inp".' )
 ENDIF
 
 
@@ -500,7 +503,7 @@ READ(UI,*,IOSTAT=IOS)  Pitch
 IF ( IOS < 0 )  THEN
    CALL PremEOF ( TRIM( RootName )//'.inp' , ' The error occurred while trying to read the pitch angle.' )
 ELSEIF ( IOS > 0 )  THEN
-   Call Abort ( ProgName//' could not read the pitch angle from the input file, "'//TRIM( RootName )//'.inp".' )
+   Call ProgAbort ( ProgName//' could not read the pitch angle from the input file, "'//TRIM( RootName )//'.inp".' )
 ENDIF
 
 IF ( .NOT. IsBlade )  Pitch = 0.0
@@ -513,11 +516,11 @@ READ(UI,*,IOSTAT=IOS)  TotLen
 IF ( IOS < 0 )  THEN
    CALL PremEOF ( TRIM( RootName )//'.inp' , ' The error occurred while trying to read the total beam length.' )
 ELSEIF ( IOS > 0 )  THEN
-   Call Abort ( ProgName//' could not read the total beam length from the input file, "'//TRIM( RootName )//'.inp".' )
+   Call ProgAbort ( ProgName//' could not read the total beam length from the input file, "'//TRIM( RootName )//'.inp".' )
 ENDIF
 
 IF ( TotLen <= 0.0 )  THEN
-   Call Abort ( 'The total beam length must > 0.' )
+   Call ProgAbort ( 'The total beam length must > 0.' )
 ENDIF
 
 
@@ -528,11 +531,11 @@ READ(UI,*,IOSTAT=IOS)  RigLen
 IF ( IOS < 0 )  THEN
    CALL PremEOF ( TRIM( RootName )//'.inp' , ' The error occurred while trying to read the length of the rigid part of the beam.' )
 ELSEIF ( IOS > 0 )  THEN
-   Call Abort ( ProgName//' could not read the length of the rigid part of the beam from the input file, "'//TRIM( RootName )//'.inp".' )
+   Call ProgAbort ( ProgName//' could not read the length of the rigid part of the beam from the input file, "'//TRIM( RootName )//'.inp".' )
 ENDIF
 
 IF ( RigLen < 0.0 )  THEN
-   Call Abort ( 'The length of the rigid part of the beam must >= 0.' )
+   Call ProgAbort ( 'The length of the rigid part of the beam must >= 0.' )
 ENDIF
 
 
@@ -543,11 +546,11 @@ READ(UI,*,IOSTAT=IOS)  EndMass
 IF ( IOS < 0 )  THEN
    CALL PremEOF ( TRIM( RootName )//'.inp' , ' The error occurred while trying to read the beam end mass.' )
 ELSEIF ( IOS > 0 )  THEN
-   Call Abort ( ProgName//' could not read the beam end mass from the input file, "'//TRIM( RootName )//'.inp".' )
+   Call ProgAbort ( ProgName//' could not read the beam end mass from the input file, "'//TRIM( RootName )//'.inp".' )
 ENDIF
 
 IF ( EndMass < 0.0 )  THEN
-   Call Abort ( 'The beam end mass must >= 0.' )
+   Call ProgAbort ( 'The beam end mass must >= 0.' )
 ENDIF
 
 
@@ -558,7 +561,7 @@ READ(UI,*,IOSTAT=IOS)  N
 IF ( IOS < 0 )  THEN
    CALL PremEOF ( TRIM( RootName )//'.inp' , ' The error occurred while trying to read the number of mode shapes.' )
 ELSEIF ( IOS > 0 )  THEN
-   Call Abort ( ProgName//' could not read the number of mode shapes from the input file, "'//TRIM( RootName )//'.inp".' )
+   Call ProgAbort ( ProgName//' could not read the number of mode shapes from the input file, "'//TRIM( RootName )//'.inp".' )
 ENDIF
 
 
@@ -569,7 +572,7 @@ READ(UI,*,IOSTAT=IOS)  NP
 IF ( IOS < 0 )  THEN
    CALL PremEOF ( TRIM( RootName )//'.inp' , ' The error occurred while trying to read the order of the first polynomial coefficient.' )
 ELSEIF ( IOS > 0 )  THEN
-   Call Abort ( ProgName//' could not read the order of the first polynomial coefficient from the input file, "'//TRIM( RootName )//'.inp".' )
+   Call ProgAbort ( ProgName//' could not read the order of the first polynomial coefficient from the input file, "'//TRIM( RootName )//'.inp".' )
 ENDIF
 
 
@@ -580,11 +583,11 @@ READ(UI,*,IOSTAT=IOS)  NumInSt
 IF ( IOS < 0 )  THEN
    CALL PremEOF ( TRIM( RootName )//'.inp' , ' The error occurred while trying to read the number of input stations.' )
 ELSEIF ( IOS > 0 )  THEN
-   Call Abort ( ProgName//' could not read the number of input stations from the input file, "'//TRIM( RootName )//'.inp".' )
+   Call ProgAbort ( ProgName//' could not read the number of input stations from the input file, "'//TRIM( RootName )//'.inp".' )
 ENDIF
 
 IF ( NumInSt < 1 )  THEN
-   Call Abort ( 'The number of input stations must >= 1' )
+   Call ProgAbort ( 'The number of input stations must >= 1' )
 ENDIF
 
 
@@ -595,11 +598,11 @@ READ(UI,*,IOSTAT=IOS)  MassFact
 IF ( IOS < 0 )  THEN
    CALL PremEOF ( TRIM( RootName )//'.inp' , ' The error occurred while trying to read the mass factor.' )
 ELSEIF ( IOS > 0 )  THEN
-   Call Abort ( ProgName//' could not read the mass factor from the input file, "'//TRIM( RootName )//'.inp".' )
+   Call ProgAbort ( ProgName//' could not read the mass factor from the input file, "'//TRIM( RootName )//'.inp".' )
 ENDIF
 
 IF ( MassFact <= 0.0 )  THEN
-   Call Abort ( 'The mass factor must be > 0.0' )
+   Call ProgAbort ( 'The mass factor must be > 0.0' )
 ENDIF
 
 
@@ -610,11 +613,11 @@ READ(UI,*,IOSTAT=IOS)  StiffFact(1)
 IF ( IOS < 0 )  THEN
    CALL PremEOF ( TRIM( RootName )//'.inp' , ' The error occurred while trying to read the out-of-plane or tower stiffness factor.' )
 ELSEIF ( IOS > 0 )  THEN
-   Call Abort ( ProgName//' could not read the out-of-plane or tower stiffness factor from the input file, "'//TRIM( RootName )//'.inp".' )
+   Call ProgAbort ( ProgName//' could not read the out-of-plane or tower stiffness factor from the input file, "'//TRIM( RootName )//'.inp".' )
 ENDIF
 
 IF ( StiffFact(1) <= 0.0 )  THEN
-   Call Abort ( 'The out-of-plane or tower stiffness factor must be > 0.0' )
+   Call ProgAbort ( 'The out-of-plane or tower stiffness factor must be > 0.0' )
 ENDIF
 
 
@@ -625,11 +628,11 @@ READ(UI,*,IOSTAT=IOS)  StiffFact(2)
 IF ( IOS < 0 )  THEN
    CALL PremEOF ( TRIM( RootName )//'.inp' , ' The error occurred while trying to read the in-plane stiffness factor.' )
 ELSEIF ( IOS > 0 )  THEN
-   Call Abort ( ProgName//' could not read the in-plane stiffness factor from the input file, "'//TRIM( RootName )//'.inp".' )
+   Call ProgAbort ( ProgName//' could not read the in-plane stiffness factor from the input file, "'//TRIM( RootName )//'.inp".' )
 ENDIF
 
 IF ( ( StiffFact(2) <= 0.0 ) .AND. ( IsBlade ) )  THEN
-   Call Abort ( 'The in-plane stiffness factor must be > 0.0' )
+   Call ProgAbort ( 'The in-plane stiffness factor must be > 0.0' )
 ENDIF
 
 
@@ -638,27 +641,27 @@ ENDIF
 ALLOCATE ( LocIS(0:NumInSt-1) , STAT=AllocStat )
 
 IF ( AllocStat /= 0 )  THEN
-   CALL Abort ( 'Error allocating memory for the array for locations of the input stations.' )
+   CALL ProgAbort ( 'Error allocating memory for the array for locations of the input stations.' )
 ENDIF
 
 
 ALLOCATE ( InpMass(0:NumInSt-1) , STAT=AllocStat )
 
 IF ( AllocStat /= 0 )  THEN
-   CALL Abort ( 'Error allocating memory for the array for input mass.' )
+   CALL ProgAbort ( 'Error allocating memory for the array for input mass.' )
 ENDIF
 
 
 ALLOCATE ( InpStiff(NumStiff,0:NumInSt-1) , STAT=AllocStat )
 IF ( AllocStat /= 0 )  THEN
-   CALL Abort ( 'Error allocating memory for the array for input stiffness.' )
+   CALL ProgAbort ( 'Error allocating memory for the array for input stiffness.' )
 ENDIF
 
 
 ALLOCATE ( InpTwist(0:NumInSt-1) , STAT=AllocStat )
 
 IF ( AllocStat /= 0 )  THEN
-   CALL Abort ( 'Error allocating memory for the array for input twist.' )
+   CALL ProgAbort ( 'Error allocating memory for the array for input twist.' )
 ENDIF
 
 
@@ -685,7 +688,7 @@ DO Stat=0,NumInSt-1
 ENDDO ! Stat
 
 IF ( ( LocIS(0) /= 0.0 ) .OR. ( LocIS(NumInSt-1) /= 1.0 ) )  THEN
-   CALL Abort ( 'Station location data must go from 0 to 1.' )
+   CALL ProgAbort ( 'Station location data must go from 0 to 1.' )
 ENDIF
 
 
@@ -782,14 +785,14 @@ ENDIF
 ALLOCATE ( BM(0:NIPts) , STAT=AllocStat )
 
 IF ( AllocStat /= 0 )  THEN
-   CALL Abort ( 'Error allocating memory for the BM array .' )
+   CALL ProgAbort ( 'Error allocating memory for the BM array .' )
 ENDIF
 
 
 ALLOCATE ( BS(0:NIPts,NumStiff) , STAT=AllocStat )
 
 IF ( AllocStat /= 0 )  THEN
-   CALL Abort ( 'Error allocating memory for the BS array .' )
+   CALL ProgAbort ( 'Error allocating memory for the BS array .' )
 ENDIF
 
 

@@ -2,7 +2,7 @@ MODULE GenSubs
 CONTAINS
 
 !=======================================================================
-SUBROUTINE Abort ( Message )
+SUBROUTINE ProgAbort ( Message )
 
 
    ! This routine outputs fatal Error messages and stops the program.
@@ -25,7 +25,7 @@ CALL EXIT   ( 1 )
 
 
 RETURN
-END SUBROUTINE Abort
+END SUBROUTINE ProgAbort
 !=======================================================================
 FUNCTION CurDate( )
 
@@ -117,20 +117,20 @@ FUNCTION Flt2LStr ( FltNum )
    ! point if it is not a fraction.
 
 
-IMPLICIT		     NONE
+IMPLICIT           NONE
 
-REAL		        FltNum
+REAL              FltNum
 
-INTEGER		     IC
+INTEGER           IC
 
-CHARACTER*(15)   Flt2LStr
+CHARACTER(15)   Flt2LStr
 
 
    ! Return a 0 if that's what we have.
 
 IF ( FltNum == 0.0 )  THEN
-	Flt2LStr = '0'
-	RETURN
+   Flt2LStr = '0'
+   RETURN
 ENDIF
 
 
@@ -146,14 +146,14 @@ Flt2LStr = ADJUSTL( Flt2LStr )
 
 DO IC=LEN_TRIM( Flt2LStr ),1,-1
 
-	IF ( Flt2LStr(IC:IC) == '.' )  THEN
-	   Flt2LStr(IC:IC) = ' '
-	   RETURN
-	ELSEIF ( Flt2LStr(IC:IC) /= '0' )  THEN
+   IF ( Flt2LStr(IC:IC) == '.' )  THEN
+      Flt2LStr(IC:IC) = ' '
       RETURN
-	ENDIF
+   ELSEIF ( Flt2LStr(IC:IC) /= '0' )  THEN
+      RETURN
+   ENDIF
 
-	Flt2LStr(IC:IC) = ' '
+   Flt2LStr(IC:IC) = ' '
 
 ENDDO ! IC
 
@@ -178,7 +178,7 @@ CHARACTER(*)    Message
 
 
 CALL WrScr1 ( ' Premature EOF for file "'//TRIM( Fil )//'.' )
-CALL Abort  ( Message )
+CALL ProgAbort  ( Message )
 
 
 RETURN
@@ -197,10 +197,8 @@ IMPLICIT       NONE
 CHARACTER(*)   Str
 
 
-
 CALL WrScr ( ' ' )
 CALL WrScr ( Str )
-
 
 RETURN
 END SUBROUTINE WrScr1

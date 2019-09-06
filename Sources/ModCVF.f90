@@ -2,13 +2,10 @@
 MODULE SysMod
 
 
-IMPLICIT           NONE
+IMPLICIT NONE
 
-INTEGER            UC
+INTEGER, PARAMETER     ::   UC = 6 ! If this is not 6, OpenCon() should be changed.
 
-CHARACTER*(1)      SwChar
-
-DATA               UC          / 5 /
-DATA               SwChar      / '/' /
+CHARACTER(*),PARAMETER :: SwChar = '/'
 
 END MODULE SysMod
